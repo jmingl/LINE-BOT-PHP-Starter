@@ -1,48 +1,19 @@
 <?php
-$access_token = '56lIMjyVC6K8m0mePhsAbLLvkJnlev+24q4XkEGf6mRUvJQdY69/psAbR4HupuhBhnXbmncRYdEBEIrFZgmML//WCwcPtzs4tsO2LY5ZFcp0X+Ahq0m84hMP5WvvcnEfupGrlLKYQ6g/ntBUgThPbQdB04t89/1O/w1cDnyilFU=';
 
-// Get POST body content
-$content = file_get_contents('php://input');
-// Parse JSON
-$events = json_decode($content, true);
-// Validate parsed JSON data
-if (!is_null($events['events'])) {
-	// Loop through each event
-	foreach ($events['events'] as $event) {
-		// Reply only when message sent is in 'text' format
-		if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
-			// Get text sent
-			$text = $event['message']['text'];
-			// Get replyToken
-			$replyToken = $event['replyToken'];
+include ('line-bot-api/php/line-bot.php');
 
-			// Build message to reply back
-			$messages = [
-				'type' => 'text',
-				'text' => $text
-			];
+$channelSecret = '6d45a8b013b7f2909217fa5a87f00d3c';
+$access_token  = '56lIMjyVC6K8m0mePhsAbLLvkJnlev+24q4XkEGf6mRUvJQdY69/psAbR4HupuhBhnXbmncRYdEBEIrFZgmML//WCwcPtzs4tsO2LY5ZFcp0X+Ahq0m84hMP5WvvcnEfupGrlLKYQ6g/ntBUgThPbQdB04t89/1O/w1cDnyilFU=';
 
-			// Make a POST Request to Messaging API to reply to sender
-			$url = 'https://api.line.me/v2/bot/message/reply';
-			$data = [
-				'replyToken' => $replyToken,
-				'messages' => [$messages],
-			];
-			$post = json_encode($data);
-			$headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+$bot = new BOT_API($channelSecret, $access_token);
+	
+$bot->sendMessageNew('[Uca78849ef02f197ed6625d8726fd0fa1]', 'Hello World !!');
 
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-			$result = curl_exec($ch);
-			curl_close($ch);
-
-			echo $result . "\r\n";
-			
-		}
-	}
+if ($bot->isSuccess()) {
+	echo 'Succeeded!';
+	exit();
 }
-echo "OK";
+
+// Failed
+echo $bot->response->getHTTPStatus . ' ' . $bot->response->getRawBody(); 
+exit();
