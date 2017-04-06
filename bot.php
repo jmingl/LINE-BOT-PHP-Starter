@@ -41,6 +41,15 @@ if (!is_null($events['events'])) {
 			curl_close($ch);
 
 			echo $result . "\r\n";
+			
+			$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($access_token);
+			$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '6d45a8b013b7f2909217fa5a87f00d3c']);
+
+			$textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Dangerous');
+			$response = $bot->pushMessage('<to>', $textMessageBuilder);
+
+			echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
+			
 		}
 	}
 }
